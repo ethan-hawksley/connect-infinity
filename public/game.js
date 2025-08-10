@@ -583,6 +583,8 @@ class ConnectFourGame {
         this.gameState.currentPlayer = 0;
         this.gameState.winner = null;
         this.gameState.isDraw = false;
+        // Reset scores for all players
+        this.gameState.scores = Array(this.gameState.players.length).fill(0);
 
         this.broadcastMessage({ type: 'start-game', gameState: this.gameState });
         this.renderBoard();
