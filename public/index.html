@@ -2,61 +2,61 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiplayer Connect 4</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Connect Infinite</title>
+    <link href="styles.css" rel="stylesheet">
 </head>
 <body>
-    <div id="app">
-        <!-- Lobby Screen -->
-        <div id="lobby-screen" class="screen active">
-            <h1>Multiplayer Connect 4</h1>
-            <div class="lobby-controls">
-                <div class="input-group">
-                    <input type="text" id="player-name" placeholder="Enter your name" maxlength="20">
-                </div>
-                <div class="host-controls">
-                    <button id="host-game-btn">Host Game</button>
-                    <button id="join-game-btn">Join Game</button>
-                </div>
-                <div id="join-controls" class="input-group" style="display: none;">
-                    <input type="text" id="host-id" placeholder="Enter Host ID">
-                    <button id="connect-btn">Connect</button>
-                </div>
+<div id="app">
+    <!-- Lobby Screen -->
+    <div class="screen active" id="lobby-screen">
+        <h1>Connect Infinite</h1>
+        <div class="lobby-controls">
+            <div class="input-group">
+                <input id="player-name" maxlength="20" placeholder="Enter your name" type="text">
             </div>
-            <div id="host-info" style="display: none;">
-                <p>Your Host ID: <span id="my-peer-id"></span></p>
-                <p>Share this ID with other players</p>
+            <div class="host-controls">
+                <button id="host-game-btn">Host Game</button>
+                <button id="join-game-btn">Join Game</button>
             </div>
-            <div id="player-list">
-                <h3>Players in Lobby:</h3>
-                <ul id="players"></ul>
-                <button id="start-game-btn" style="display: none;">Start Game</button>
+            <div class="input-group" id="join-controls" style="display: none;">
+                <input id="host-id" placeholder="Enter Host ID" type="text">
+                <button id="connect-btn">Connect</button>
             </div>
         </div>
-
-        <!-- Game Screen -->
-        <div id="game-screen" class="screen">
-            <div id="game-info">
-                <div id="scores-display">
-                    <h3>Scores (7-in-a-rows)</h3>
-                    <div id="scores-list"></div>
-                </div>
-                <div id="cooldown-timer" style="display: none;">Cooldown: <span id="cooldown-seconds"></span>s</div>
-            </div>
-            <div id="game-board"></div>
-            <div id="game-status"></div>
-            <div id="game-controls">
-                <button id="replay-btn" style="display: none;">Play Again</button>
-                <button id="leave-game-btn">Leave Game</button>
-            </div>
+        <div id="host-info" style="display: none;">
+            <p>Your Host ID: <span id="my-peer-id"></span></p>
+            <p>Share this ID with other players</p>
         </div>
-
-        <!-- Connection Status -->
-        <div id="connection-status"></div>
+        <div id="player-list">
+            <h3>Players in Lobby:</h3>
+            <ul id="players"></ul>
+            <button id="start-game-btn" style="display: none;">Start Game</button>
+        </div>
     </div>
 
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <script src="game.js"></script>
+    <!-- Game Screen -->
+    <div class="screen" id="game-screen">
+        <div id="game-info">
+            <div id="scores-display">
+                <h3>Scores</h3>
+                <div id="scores-list"></div>
+            </div>
+            <div id="cooldown-timer" style="display: none;">Cooldown: <span id="cooldown-seconds"></span>s</div>
+        </div>
+        <div id="game-board"></div>
+        <div id="game-status"></div>
+        <div id="game-controls">
+            <button id="replay-btn" style="display: none;">Play Again</button>
+            <button id="leave-game-btn">Leave Game</button>
+        </div>
+    </div>
+
+    <!-- Connection Status -->
+    <div id="connection-status"></div>
+</div>
+
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script src="game.js"></script>
 </body>
 </html>
