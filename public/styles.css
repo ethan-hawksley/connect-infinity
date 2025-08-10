@@ -142,25 +142,73 @@ button:disabled {
 #game-info {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 20px;
     padding: 15px;
     background: #f7fafc;
     border-radius: 8px;
 }
 
-#current-player {
-    font-size: 18px;
+#scores-display {
+    flex: 1;
+}
+
+#scores-display h3 {
+    margin: 0 0 10px 0;
+    color: #4a5568;
+    font-size: 16px;
+}
+
+#scores-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.score-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.player-color {
+    font-size: 16px;
     font-weight: bold;
 }
 
-#turn-indicator {
+.player-color.red {
+    color: #c53030;
+}
+
+.player-color.yellow {
+    color: #ed8936;
+}
+
+.player-color.blue {
+    color: #3182ce;
+}
+
+.player-color.green {
+    color: #38a169;
+}
+
+.player-name {
+    flex: 1;
+    font-weight: 500;
+}
+
+.player-score {
+    font-weight: bold;
     color: #667eea;
-}
-
-#cooldown-timer {
-    color: #e53e3e;
-    font-weight: bold;
+    background: #edf2f7;
+    padding: 2px 8px;
+    border-radius: 4px;
+    min-width: 24px;
+    text-align: center;
 }
 
 #game-board {

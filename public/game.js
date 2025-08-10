@@ -9,7 +9,8 @@ class ConnectFourGame {
             players: [],
             gameStarted: false,
             winner: null,
-            isDraw: false
+            isDraw: false,
+            scores: [] // Track 7-in-a-row counts for each player
         };
         this.playerName = '';
         this.myPlayerId = null;
@@ -278,6 +279,8 @@ class ConnectFourGame {
         this.gameState.board = Array(9).fill().map(() => Array(9).fill(null));
         this.gameState.winner = null;
         this.gameState.isDraw = false;
+        // Initialize scores for all players
+        this.gameState.scores = Array(this.gameState.players.length).fill(0);
 
         this.broadcastMessage({ type: 'start-game', gameState: this.gameState });
         this.showScreen('game-screen');
@@ -327,13 +330,19 @@ class ConnectFourGame {
         // Place the piece
         this.gameState.board[row][actualCol] = playerId;
 
-        // Check for win
+        // Check for 7-in-a-row and increment score
         if (this.checkWin(row, actualCol, playerId)) {
-            this.gameState.winner = playerId;
-        } else if (this.checkDraw()) {
-            this.gameState.isDraw = true;
+            this.gameState.scores[playerId]++;
+            // Mark winning cells for visual effect
+            this.markWinningCells(row, actualCol, playerId);
         }
-        // No turn switching - it's free for all
+
+        // Check if board is full (draw condition)
+        if (this.checkDraw()) {
+            this.gameState.isDraw = true;
+            // Determine overall winner based on scores
+            this.determineOverallWinner();
+        }
 
         this.broadcastGameState();
         this.renderBoard();
@@ -378,6 +387,31 @@ class ConnectFourGame {
         }
 
         return false;
+    }
+
+    markWinningCells(row, col, playerId) {
+        // This method would mark winning cells for visual effect
+        // For now, we'll just note the achievement in console
+        console.log(`Player ${playerId} scored a 7-in-a-row!`);
+    }
+
+    determineOverallWinner() {
+        // Find the player with the most 7-in-a-rows
+        let maxScore = Math.max(...this.gameState.scores);
+        let winners = [];
+
+        this.gameState.scores.forEach((score, index) => {
+            if (score === maxScore) {
+                winners.push(index);
+            }
+        });
+
+        if (winners.length === 1) {
+            this.gameState.winner = winners[0];
+        } else {
+            // Multiple players tied - it's a draw
+            this.gameState.winner = null;
+        }
     }
 
     checkDraw() {
@@ -442,35 +476,44 @@ class ConnectFourGame {
     }
 
     updateGameInfo() {
-        const turnIndicator = document.getElementById('turn-indicator');
         const gameStatus = document.getElementById('game-status');
         const replayBtn = document.getElementById('replay-btn');
 
         if (this.gameState.winner !== null) {
             const winnerName = this.gameState.players[this.gameState.winner].name;
-            gameStatus.textContent = `🎉 ${winnerName} wins!`;
+            const winnerScore = this.gameState.scores[this.gameState.winner];
+            gameStatus.textContent = `🎉 ${winnerName} wins with ${winnerScore} seven-in-a-rows!`;
             gameStatus.className = 'winner';
-            turnIndicator.textContent = 'Game Over';
 
             // Show replay button only for host
             if (this.isHost) {
                 replayBtn.style.display = 'inline-block';
             }
         } else if (this.gameState.isDraw) {
-            gameStatus.textContent = "It's a draw!";
-            gameStatus.className = 'draw';
-            turnIndicator.textContent = 'Game Over';
+            // Show final scores in case of draw
+            const maxScore = Math.max(...this.gameState.scores);
+            const winners = this.gameState.players.filter((_, index) => this.gameState.scores[index] === maxScore);
+
+            if (winners.length === 1) {
+                gameStatus.textContent = `🎉 ${winners[0].name} wins with ${maxScore} seven-in-a-rows!`;
+                gameStatus.className = 'winner';
+            } else {
+                gameStatus.textContent = `It's a tie! Multiple players scored ${maxScore} seven-in-a-rows!`;
+                gameStatus.className = 'draw';
+            }
 
             // Show replay button only for host
             if (this.isHost) {
                 replayBtn.style.display = 'inline-block';
             }
         } else {
-            turnIndicator.textContent = 'Free For All - Get 7 in a row!';
-            gameStatus.textContent = '';
+            gameStatus.textContent = 'Get 7 in a row to score! Game ends when board is full.';
             gameStatus.className = '';
             replayBtn.style.display = 'none';
         }
+
+        // Update scores display
+        this.updateScoresDisplay();
     }
 
     updatePlayerList() {
@@ -487,11 +530,6 @@ class ConnectFourGame {
                 li.textContent += ' (Host)';
             }
 
-            if (this.gameState.gameStarted && index === this.gameState.currentPlayer) {
-                li.classList.add('current-turn');
-                li.textContent += ' (Current Turn)';
-            }
-
             playersList.appendChild(li);
         });
 
@@ -500,6 +538,29 @@ class ConnectFourGame {
             startGameBtn.style.display = 'block';
         } else {
             startGameBtn.style.display = 'none';
+        }
+    }
+
+    updateScoresDisplay() {
+        const scoresList = document.getElementById('scores-list');
+        scoresList.innerHTML = '';
+
+        if (this.gameState.gameStarted && this.gameState.scores.length > 0) {
+            this.gameState.players.forEach((player, index) => {
+                const scoreItem = document.createElement('div');
+                scoreItem.className = 'score-item';
+
+                const colors = ['red', 'yellow', 'blue', 'green'];
+                const colorClass = colors[index % colors.length];
+
+                scoreItem.innerHTML = `
+                    <span class="player-color ${colorClass}">●</span>
+                    <span class="player-name">${player.name}</span>
+                    <span class="player-score">${this.gameState.scores[index] || 0}</span>
+                `;
+
+                scoresList.appendChild(scoreItem);
+            });
         }
     }
 
@@ -547,7 +608,8 @@ class ConnectFourGame {
             players: [],
             gameStarted: false,
             winner: null,
-            isDraw: false
+            isDraw: false,
+            scores: [] // Track 7-in-a-row counts for each player
         };
 
         document.getElementById('host-info').style.display = 'none';
