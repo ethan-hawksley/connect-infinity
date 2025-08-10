@@ -1,4 +1,3 @@
-            if (count >= 7) return true;
 class ConnectFourGame {
     constructor() {
         this.peer = null;
@@ -6,8 +5,8 @@ class ConnectFourGame {
         this.isHost = false;
         this.gameState = {
             board: Array(9).fill().map(() => Array(9).fill(null)),
-        for (let row = 0; row < 9; row++) {
-            for (let col = 0; col < 9; col++) {
+            currentPlayer: 0,
+            players: [],
             gameStarted: false,
             winner: null,
             isDraw: false
@@ -39,12 +38,12 @@ class ConnectFourGame {
             }
         });
 
-        for (let row = 0; row < 9; row++) {
-            for (let col = 0; col < 9; col++) {
+        // Enter key support
+        document.getElementById('player-name').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') document.getElementById('host-game-btn').click();
         });
 
-                cell.dataset.col = row * 9 + col; // Use linear index for free placement
+        document.getElementById('host-id').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') document.getElementById('connect-btn').click();
         });
     }
@@ -68,7 +67,6 @@ class ConnectFourGame {
             alert('Please enter your name first');
             return;
         }
-        const replayBtn = document.getElementById('replay-btn');
 
         this.playerName = nameInput.value.trim();
         this.isHost = true;
@@ -76,24 +74,13 @@ class ConnectFourGame {
         try {
             this.updateConnectionStatus('connecting', 'Starting game...');
 
-            // Show replay button only for host
-            if (this.isHost) {
-                replayBtn.style.display = 'inline-block';
-            }
-
             // Generate a random peer ID
             const peerId = 'connect4-' + Math.random().toString(36).substr(2, 9);
             this.peer = new Peer(peerId);
 
-            // Show replay button only for host
-            if (this.isHost) {
-                replayBtn.style.display = 'inline-block';
-            }
-
-            turnIndicator.textContent = 'Free For All - Get 7 in a row!';
+            this.peer.on('open', (id) => {
                 this.myPlayerId = 0; // Host is always player 0
                 this.gameState.players = [{ name: this.playerName, id: id, connected: true }];
-            replayBtn.style.display = 'none';
 
                 document.getElementById('my-peer-id').textContent = id;
                 document.getElementById('host-info').style.display = 'block';
@@ -152,7 +139,7 @@ class ConnectFourGame {
             this.peer.on('error', (err) => {
                 console.error('Peer error:', err);
                 this.updateConnectionStatus('disconnected', 'Connection failed');
-            board: Array(9).fill().map(() => Array(9).fill(null)),
+                alert('Failed to connect: ' + err.message);
             });
 
         } catch (error) {
@@ -169,19 +156,6 @@ class ConnectFourGame {
     handleConnection(conn) {
         conn.on('open', () => {
             if (this.isHost) {
-
-    replayGame() {
-        this.gameState.board = Array(9).fill().map(() => Array(9).fill(null));
-        this.gameState.currentPlayer = 0;
-        this.gameState.winner = null;
-        this.gameState.isDraw = false;
-
-        this.broadcastMessage({ type: 'start-game', gameState: this.gameState });
-        this.showScreen('game-screen');
-        this.renderBoard();
-        this.updateGameInfo();
-        this.updatePlayerList();
-    }
                 // Add new player
                 const playerId = this.gameState.players.length;
                 conn.send({
@@ -400,6 +374,7 @@ class ConnectFourGame {
                 }
             }
 
+            if (count >= 7) return true;
         }
 
         return false;
@@ -407,8 +382,8 @@ class ConnectFourGame {
 
     checkDraw() {
         // Check if all cells are filled
-        for (let row = 0; row < 6; row++) {
-            for (let col = 0; col < 7; col++) {
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
                 if (this.gameState.board[row][col] === null) {
                     return false;
                 }
@@ -440,12 +415,12 @@ class ConnectFourGame {
         const boardElement = document.getElementById('game-board');
         boardElement.innerHTML = '';
 
-        for (let row = 0; row < 6; row++) {
-            for (let col = 0; col < 7; col++) {
+        for (let row = 0; row < 9; row++) {
+            for (let col = 0; col < 9; col++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 cell.dataset.row = row;
-                cell.dataset.col = row * 7 + col; // Use linear index for free placement
+                cell.dataset.col = row * 9 + col; // Use linear index for free placement
 
                 const player = this.gameState.board[row][col];
                 if (player !== null) {
@@ -469,20 +444,32 @@ class ConnectFourGame {
     updateGameInfo() {
         const turnIndicator = document.getElementById('turn-indicator');
         const gameStatus = document.getElementById('game-status');
+        const replayBtn = document.getElementById('replay-btn');
 
         if (this.gameState.winner !== null) {
             const winnerName = this.gameState.players[this.gameState.winner].name;
             gameStatus.textContent = `🎉 ${winnerName} wins!`;
             gameStatus.className = 'winner';
             turnIndicator.textContent = 'Game Over';
+
+            // Show replay button only for host
+            if (this.isHost) {
+                replayBtn.style.display = 'inline-block';
+            }
         } else if (this.gameState.isDraw) {
             gameStatus.textContent = "It's a draw!";
             gameStatus.className = 'draw';
             turnIndicator.textContent = 'Game Over';
+
+            // Show replay button only for host
+            if (this.isHost) {
+                replayBtn.style.display = 'inline-block';
+            }
         } else {
-            turnIndicator.textContent = 'Free For All - Place anywhere!';
+            turnIndicator.textContent = 'Free For All - Get 7 in a row!';
             gameStatus.textContent = '';
             gameStatus.className = '';
+            replayBtn.style.display = 'none';
         }
     }
 
@@ -528,6 +515,20 @@ class ConnectFourGame {
         });
     }
 
+    replayGame() {
+        if (!this.isHost) return;
+
+        this.gameState.board = Array(9).fill().map(() => Array(9).fill(null));
+        this.gameState.currentPlayer = 0;
+        this.gameState.winner = null;
+        this.gameState.isDraw = false;
+
+        this.broadcastMessage({ type: 'start-game', gameState: this.gameState });
+        this.renderBoard();
+        this.updateGameInfo();
+        this.updatePlayerList();
+    }
+
     leaveGame() {
         if (this.peer) {
             this.peer.destroy();
@@ -541,7 +542,7 @@ class ConnectFourGame {
         this.connections = [];
         this.isHost = false;
         this.gameState = {
-            board: Array(6).fill().map(() => Array(7).fill(null)),
+            board: Array(9).fill().map(() => Array(9).fill(null)),
             currentPlayer: 0,
             players: [],
             gameStarted: false,
