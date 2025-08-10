@@ -4,13 +4,13 @@ class ConnectFourGame {
         this.connections = [];
         this.isHost = false;
         this.gameState = {
-            board: Array(9).fill().map(() => Array(9).fill(null)),
+            board: Array(6).fill().map(() => Array(6).fill(null)),
             currentPlayer: 0,
             players: [],
             gameStarted: false,
             winner: null,
             isDraw: false,
-            scores: [] // Track 7-in-a-row counts for each player
+            scores: [] // Track 4-in-a-row counts for each player
         };
         this.playerName = '';
         this.myPlayerId = null;
@@ -276,7 +276,7 @@ class ConnectFourGame {
 
         this.gameState.gameStarted = true;
         this.gameState.currentPlayer = 0;
-        this.gameState.board = Array(9).fill().map(() => Array(9).fill(null));
+        this.gameState.board = Array(6).fill().map(() => Array(6).fill(null));
         this.gameState.winner = null;
         this.gameState.isDraw = false;
         // Initialize scores for all players
@@ -319,8 +319,8 @@ class ConnectFourGame {
             return;
         }
 
-        const row = Math.floor(col / 9);
-        const actualCol = col % 9;
+        const row = Math.floor(col / 6);
+        const actualCol = col % 6;
 
         // Check if cell is already occupied
         if (this.gameState.board[row][actualCol] !== null) {
@@ -330,7 +330,7 @@ class ConnectFourGame {
         // Place the piece
         this.gameState.board[row][actualCol] = playerId;
 
-        // Check for 7-in-a-row and increment score
+        // Check for 4-in-a-row and increment score
         if (this.checkWin(row, actualCol, playerId)) {
             this.gameState.scores[playerId]++;
             // Mark winning cells for visual effect
@@ -362,10 +362,10 @@ class ConnectFourGame {
             let count = 1;
 
             // Check positive direction
-            for (let i = 1; i < 7; i++) {
+            for (let i = 1; i < 4; i++) {
                 const r = row + dr * i;
                 const c = col + dc * i;
-                if (r >= 0 && r < 9 && c >= 0 && c < 9 && this.gameState.board[r][c] === playerId) {
+                if (r >= 0 && r < 6 && c >= 0 && c < 6 && this.gameState.board[r][c] === playerId) {
                     count++;
                 } else {
                     break;
@@ -373,17 +373,17 @@ class ConnectFourGame {
             }
 
             // Check negative direction
-            for (let i = 1; i < 7; i++) {
+            for (let i = 1; i < 4; i++) {
                 const r = row - dr * i;
                 const c = col - dc * i;
-                if (r >= 0 && r < 9 && c >= 0 && c < 9 && this.gameState.board[r][c] === playerId) {
+                if (r >= 0 && r < 6 && c >= 0 && c < 6 && this.gameState.board[r][c] === playerId) {
                     count++;
                 } else {
                     break;
                 }
             }
 
-            if (count >= 7) return true;
+            if (count >= 4) return true;
         }
 
         return false;
@@ -392,11 +392,11 @@ class ConnectFourGame {
     markWinningCells(row, col, playerId) {
         // This method would mark winning cells for visual effect
         // For now, we'll just note the achievement in console
-        console.log(`Player ${playerId} scored a 7-in-a-row!`);
+        console.log(`Player ${playerId} scored a 4-in-a-row!`);
     }
 
     determineOverallWinner() {
-        // Find the player with the most 7-in-a-rows
+        // Find the player with the most 4-in-a-rows
         let maxScore = Math.max(...this.gameState.scores);
         let winners = [];
 
@@ -416,8 +416,8 @@ class ConnectFourGame {
 
     checkDraw() {
         // Check if all cells are filled
-        for (let row = 0; row < 9; row++) {
-            for (let col = 0; col < 9; col++) {
+        for (let row = 0; row < 6; row++) {
+            for (let col = 0; col < 6; col++) {
                 if (this.gameState.board[row][col] === null) {
                     return false;
                 }
@@ -449,12 +449,12 @@ class ConnectFourGame {
         const boardElement = document.getElementById('game-board');
         boardElement.innerHTML = '';
 
-        for (let row = 0; row < 9; row++) {
-            for (let col = 0; col < 9; col++) {
+        for (let row = 0; row < 6; row++) {
+            for (let col = 0; col < 6; col++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 cell.dataset.row = row;
-                cell.dataset.col = row * 9 + col; // Use linear index for free placement
+                cell.dataset.col = row * 6 + col; // Use linear index for free placement
 
                 const player = this.gameState.board[row][col];
                 if (player !== null) {
@@ -482,7 +482,7 @@ class ConnectFourGame {
         if (this.gameState.winner !== null) {
             const winnerName = this.gameState.players[this.gameState.winner].name;
             const winnerScore = this.gameState.scores[this.gameState.winner];
-            gameStatus.textContent = `🎉 ${winnerName} wins with ${winnerScore} seven-in-a-rows!`;
+            gameStatus.textContent = `🎉 ${winnerName} wins with ${winnerScore} four-in-a-rows!`;
             gameStatus.className = 'winner';
 
             // Show replay button only for host
@@ -495,10 +495,10 @@ class ConnectFourGame {
             const winners = this.gameState.players.filter((_, index) => this.gameState.scores[index] === maxScore);
 
             if (winners.length === 1) {
-                gameStatus.textContent = `🎉 ${winners[0].name} wins with ${maxScore} seven-in-a-rows!`;
+                gameStatus.textContent = `🎉 ${winners[0].name} wins with ${maxScore} four-in-a-rows!`;
                 gameStatus.className = 'winner';
             } else {
-                gameStatus.textContent = `It's a tie! Multiple players scored ${maxScore} seven-in-a-rows!`;
+                gameStatus.textContent = `It's a tie! Multiple players scored ${maxScore} four-in-a-rows!`;
                 gameStatus.className = 'draw';
             }
 
@@ -507,7 +507,7 @@ class ConnectFourGame {
                 replayBtn.style.display = 'inline-block';
             }
         } else {
-            gameStatus.textContent = 'Get 7 in a row to score! Game ends when board is full.';
+            gameStatus.textContent = 'Get 4 in a row to score! Game ends when board is full.';
             gameStatus.className = '';
             replayBtn.style.display = 'none';
         }
@@ -579,7 +579,7 @@ class ConnectFourGame {
     replayGame() {
         if (!this.isHost) return;
 
-        this.gameState.board = Array(9).fill().map(() => Array(9).fill(null));
+        this.gameState.board = Array(6).fill().map(() => Array(6).fill(null));
         this.gameState.currentPlayer = 0;
         this.gameState.winner = null;
         this.gameState.isDraw = false;
@@ -603,13 +603,13 @@ class ConnectFourGame {
         this.connections = [];
         this.isHost = false;
         this.gameState = {
-            board: Array(9).fill().map(() => Array(9).fill(null)),
+            board: Array(6).fill().map(() => Array(6).fill(null)),
             currentPlayer: 0,
             players: [],
             gameStarted: false,
             winner: null,
             isDraw: false,
-            scores: [] // Track 7-in-a-row counts for each player
+            scores: [] // Track 4-in-a-row counts for each player
         };
 
         document.getElementById('host-info').style.display = 'none';
