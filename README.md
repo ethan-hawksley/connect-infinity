@@ -10,3 +10,7 @@ This program allows you to play connect 4 simultaneously with as many players as
 - All other players must click "join game" and input the host's id code
 - Click on any of the circles to place a token there
 - Most rows of 4 by the end of the game wins
+
+## Authors
+
+[Ethan Hawksley](https://hawksley.dev) and [Thesupernile](https://github.com/Thesupernile)
