@@ -4,7 +4,7 @@ This program allows you to play connect 4 simultaneously with as many players as
 
 # Setup
 
-- Head to https://ethan-hawksley.github.io/connect-infinity/public/
+- Head to [https://hawksley.dev/connect-infinity/](https://hawksley.dev/connect-infinity/)
 - Enter a name
 - One player must act as a host. Select "Hostgame" to host
 - All other players must click "join game" and input the host's id code
