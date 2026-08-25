@@ -1,10 +1,10 @@
 # Overview
 
-This program allows you to play connect 4 simultaneously with as many players as you like. The game is a rush to complete the board and connect 4 as quickly as possible.
+Connect Infinity is a speed-based version of Connect 4. Lobbies can contain as many players as you'd like, and whoever has the most rows of 4 at the end wins!
 
 # Setup
 
-- Head to [https://hawksley.dev/connect-infinity/](https://hawksley.dev/connect-infinity/)
+- Head to [https://connect-infinity.hawksley.dev/](https://connect-infinity.hawksley.dev/)
 - Enter a name
 - One player must act as a host. Select "Hostgame" to host
 - All other players must click "join game" and input the host's id code
