@@ -4,7 +4,7 @@ Connect Infinity is a speed-based version of Connect 4. Lobbies can contain as m
 
 # Setup
 
-- Head to [https://connect-infinity.hawksley.dev/](https://connect-infinity.hawksley.dev/)
+- Head to [https://connect-infinity.hawksley.dev](https://connect-infinity.hawksley.dev)
 - Enter a name
 - One player must act as a host. Select "Hostgame" to host
 - All other players must click "join game" and input the host's id code
